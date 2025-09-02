@@ -20,8 +20,9 @@ namespace TokenExpires.Controllers
 
             if (string.IsNullOrEmpty(_accessToken) || DateTime.UtcNow >= _expiry)
             {
-                _accessToken = GetAccessToken();
-                _expiry = DateTime.UtcNow.AddMinutes(15);
+                var TokenResponse = GetAccessToken();
+                _accessToken = TokenResponse.AccessToken;
+                _expiry = TokenResponse.ExpiresIn;
             }
 
             var orders = GetOrders(_accessToken);
@@ -30,10 +31,15 @@ namespace TokenExpires.Controllers
 
         }
 
-        public string GetAccessToken()
+        public TokenResponse GetAccessToken()
         {
 
-            return "new_access_token";
+            return new TokenResponse
+            {
+                TokenType = "Bearer",
+                ExpiresIn = DateTime.UtcNow.AddMinutes(15),
+                AccessToken = "sample_access_token"
+            };
         }
         
         public object GetOrders(string accessToken)
